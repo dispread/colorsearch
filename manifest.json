@@ -1,0 +1,19 @@
+{
+    "manifest_version": 2,
+    "name": "Colorsearch",
+    "version": "1.0",
+
+    "permissions": ["tabs"],
+  
+    "description": "Replaces color searches with color pages ;)",
+  
+    "icons": {
+        "48": "icons/colorsearch-48.png"
+    },
+  
+    "background": {
+        "scripts": ["colorsearch.js"],
+        "persistent": true
+    }
+}
+  
