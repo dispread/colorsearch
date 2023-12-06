@@ -33,7 +33,7 @@ browser.tabs.onUpdated.addListener(function(tabId) {
         var tab = {
             url: url
         }
-        console.info("URL: " + url);
+        console.debug("URL: " + url);
         if(!checkUrl(url, tabId)) {
             return null;
         }
@@ -46,17 +46,17 @@ browser.tabs.onUpdated.addListener(function(tabId) {
         if(IGNORE_CASE) {
             query = query.toLowerCase();
         }
-        console.info("Query: " + query);
+        console.debug("Query: " + query);
 
         if(useColorList) {
-            console.log("Checking color list");
+            console.debug("Checking color list");
             if(!COLOR_LIST.includes(query)) {
-                console.info("Query doesn't match the color list");
+                console.debug("Query doesn't match the color list");
                 return null;
             }
         } else {
             if(!isValidColor(query)) {
-                console.info("Query doesn't match the color list");
+                console.debug("Query doesn't match the color list");
                 return null;
             }
         }
@@ -68,11 +68,10 @@ browser.tabs.onUpdated.addListener(function(tabId) {
 
         // Create a URL for the Blob using the chrome-extension: scheme
         const blobUrl = URL.createObjectURL(blob);
-
-        // Use chrome.tabs.update to update the tab with the new HTML
+        // Use browser.tabs.update to update the tab with the new HTML
         browser.tabs.update(tabId, { url: blobUrl }).then(() => {
             loading.delete(tabId);
-            console.info("Removed tabId " + tabId);
+            console.debug("Removed tabId " + tabId);
         }).catch(() => {
             console.error("shit went wrong but should be caught");
         });
@@ -94,10 +93,10 @@ function getUrl(tabId) {
 
 function checkUrl(currentURL, currentTab) {
     if(!regex.test(currentURL)) {
-        console.info("Url doesn't match");
+        console.debug("Url doesn't match");
         return false;
     } else if(loading.has(currentTab)) {
-        console.info("Url is on cooldown");
+        console.debug("Url is on cooldown");
         return false;
 
         function changeBackground() {
@@ -105,7 +104,7 @@ function checkUrl(currentURL, currentTab) {
             document.getElementById("background").style.backgroundColor("background-color: red");
         }
     }
-    console.info("Url matches");
+    console.debug("Url matches");
     return true;
 }
 
