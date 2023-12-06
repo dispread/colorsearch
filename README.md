@@ -4,4 +4,7 @@
 Replaces valid css color search queries with a site with the given color.
 
 ### How do I use it
-Install the addon and search for "cyan" or any other valid css color
+Install the addon and search for "cyan" or any other valid css color.
+
+### Can I contribute
+Yes please. I suck at js big time.
