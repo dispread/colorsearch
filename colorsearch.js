@@ -3,7 +3,13 @@ const IGNORE_CASE = true;
 const COLOR_LIST = [
     "white",
     "black",
-    "red"
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "violet",
+    "purple"
 ];
 const htmlTempl = `
 <!DOCTYPE html>
@@ -15,6 +21,8 @@ const htmlTempl = `
     </style>
 </head></html>
 `;
+
+var useColorList = false;
 
 let loading = new Set();
 
@@ -40,9 +48,17 @@ browser.tabs.onUpdated.addListener(function(tabId) {
         }
         console.info("Query: " + query);
 
-        if(!validColor(query)) {
-            console.info("Query doesn't match the color list");
-            return null;
+        if(useColorList) {
+            console.log("Checking color list");
+            if(!COLOR_LIST.includes(query)) {
+                console.info("Query doesn't match the color list");
+                return null;
+            }
+        } else {
+            if(!isValidColor(query)) {
+                console.info("Query doesn't match the color list");
+                return null;
+            }
         }
 
         console.info("Valid color, redirecting...");
@@ -54,9 +70,11 @@ browser.tabs.onUpdated.addListener(function(tabId) {
         const blobUrl = URL.createObjectURL(blob);
 
         // Use chrome.tabs.update to update the tab with the new HTML
-        chrome.tabs.update(tabId, { url: blobUrl }).then(() => {
+        browser.tabs.update(tabId, { url: blobUrl }).then(() => {
             loading.delete(tabId);
             console.info("Removed tabId " + tabId);
+        }).catch(() => {
+            console.error("shit went wrong but should be caught");
         });
 
         // Revoke the Blob URL to release resources
@@ -81,6 +99,11 @@ function checkUrl(currentURL, currentTab) {
     } else if(loading.has(currentTab)) {
         console.info("Url is on cooldown");
         return false;
+
+        function changeBackground() {
+            browser.tabs.executeScript(tabId, { code: 'console.log(document);' });
+            document.getElementById("background").style.backgroundColor("background-color: red");
+        }
     }
     console.info("Url matches");
     return true;
@@ -90,13 +113,24 @@ function getQuery(url) {
     return regex.exec(url)[0];
 }
 
-function validColor(color) {
+function isValidColor(color) {
     var s = new Option().style;
     s.color = color;
     return s.color == color;
 }
 
-function changeBackground() {
-    browser.tabs.executeScript(tabId, { code: 'console.log(document);' });
-    document.getElementById("background").style.backgroundColor("background-color: red");
-}
+browser.runtime.onMessage.addListener((message) => {
+    if (message.action === "only_basic_colors") {
+        console.info("Disabled css colors");
+        useColorList = true;
+    } else if (message.action === "all_css_colors") {
+        console.info("Enabled css colors");
+        useColorList = false;
+    }
+});
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "getUseColorList") {
+        sendResponse({ value: useColorList });
+    }
+});
