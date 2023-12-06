@@ -9,4 +9,6 @@ Install the addon and search for "cyan" or any other valid css color.
 ### Can I contribute
 Yes please. I suck at js big time.
 
+---
+
 [Mozilla addons link](https://addons.mozilla.org/en-US/firefox/addon/colorsearch/)
